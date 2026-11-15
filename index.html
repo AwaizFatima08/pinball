@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12062e">
+  <title>Bumper Buddies Pinball</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header id="hud">
+      <div class="hud-left">
+        <span id="hud-alias">Player</span>
+        <span id="hud-balls" aria-label="Balls left"></span>
+      </div>
+      <div class="hud-score">
+        <div id="hud-score">0</div>
+        <div id="hud-mult">x1</div>
+      </div>
+      <div class="hud-right">
+        <button id="btn-music" class="icon" title="Music on/off" aria-label="Music on/off">♪</button>
+        <button id="btn-sfx" class="icon" title="Sounds on/off" aria-label="Sounds on/off">🔔</button>
+        <button id="btn-pause" class="icon" title="Pause (P)" aria-label="Pause">❚❚</button>
+      </div>
+    </header>
+
+    <main id="stage">
+      <canvas id="game" width="480" height="800" tabindex="0" aria-label="Pinball table"></canvas>
+
+      <section id="screen-start" class="screen">
+        <div class="card">
+          <h1 class="logo"><span>Bumper</span><span>Buddies</span></h1>
+          <p class="tag">Pinball fun for everyone!</p>
+          <label for="alias" class="label">What's your player name?</label>
+          <div class="alias-row">
+            <input id="alias" maxlength="14" autocomplete="off" spellcheck="false" placeholder="e.g. Rocket Panda">
+            <button id="btn-dice" class="icon big" title="Pick a random name" aria-label="Pick a random name">🎲</button>
+          </div>
+          <p id="alias-hint" class="hint">No login needed. Just pick a fun name!</p>
+          <button id="btn-play" class="btn primary">Play!</button>
+          <div class="howto">
+            <div><b>Launch:</b> hold <kbd>Space</kbd> (or touch) and let go. Longer pull = stronger shot!</div>
+            <div><b>Flippers:</b> <kbd>←</kbd>/<kbd>Z</kbd> left, <kbd>→</kbd>/<kbd>M</kbd> right, or tap the left/right side.</div>
+            <div><b>Score:</b> hit glowing stars and smiley bumpers. Light every star for a SUPER BONUS, pass all 3 top stars for a multiplier!</div>
+          </div>
+          <h2>Top Players</h2>
+          <ol id="start-scores" class="scores"></ol>
+        </div>
+      </section>
+
+      <section id="screen-over" class="screen hidden">
+        <div class="card">
+          <h1 class="title">Game Over!</h1>
+          <p class="tag">Great playing, <span id="over-name"></span>!</p>
+          <div id="over-score" class="final">0</div>
+          <div id="over-badge" class="badge hidden">★ New Best Score! ★</div>
+          <p id="over-stats" class="hint"></p>
+          <h2>Top Players</h2>
+          <ol id="over-scores" class="scores"></ol>
+          <div class="row">
+            <button id="btn-again" class="btn primary">Play Again</button>
+            <button id="btn-rename" class="btn">New Name</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-pause" class="screen hidden">
+        <div class="card small">
+          <h1 class="title">Paused</h1>
+          <div class="row">
+            <button id="btn-resume" class="btn primary">Resume</button>
+            <button id="btn-quit" class="btn">Quit</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

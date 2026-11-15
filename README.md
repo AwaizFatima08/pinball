@@ -1,0 +1,37 @@
+# Bumper Buddies Pinball
+
+A bright, kid-friendly pinball game that runs in any modern browser, on desktop or phone. No login and no server-side storage: the player types a fun alias (or rolls the 🎲 for one) and plays.
+
+## How to play
+
+- **Launch:** hold `Space` (or touch and hold the table) to pull the plunger. The power meter in the lane goes up and down; let go to fire. A weak shot rolls back for a free retry.
+- **Flippers:** `←` / `Z` / `A` for the left flipper, `→` / `M` / `L` for the right one. On a touch screen, tap the left or right half of the table.
+- **Score:**
+  - Glowing star markers (10 / 25 / 50 / 100 points, shuffled every game) light up, glow and play a chime. Hits in quick succession climb the musical scale.
+  - Smiley pop bumpers give 100–150 points and kick the ball away.
+  - Pink slingshots above the flippers give 10 points.
+  - Light all 3 top stars to raise the **multiplier** (up to x5 for that ball).
+  - Light every marker for the **Super Star Bonus** (+1000, then the markers reshuffle).
+  - When a ball drains, each lit marker adds a 20-point star bonus.
+- **Ball save:** for 8 seconds after a new ball is launched, a drained ball comes back once.
+- 3 balls per game. The final score and the local Top 10 (saved in this browser only) appear at the end.
+- `P` or `Esc` pauses. The ♪ and 🔔 buttons turn music and sound effects on or off.
+
+## Run it
+
+It is plain HTML, CSS and JavaScript with no build step. Serve the folder with any static server:
+
+```bash
+python3 -m http.server 8791 --bind 127.0.0.1
+```
+
+Then open http://127.0.0.1:8791. Opening `index.html` directly from disk also works.
+
+## Files
+
+- `index.html` – page, HUD and the start / game-over / pause screens
+- `css/style.css` – styling
+- `js/game.js` – table layout, physics (sub-stepped circle/segment collisions, moving flippers), scoring, drawing
+- `js/audio.js` – background music and all sound effects, synthesized live with the Web Audio API (no audio files, nothing to attribute)
+
+The Fredoka font is loaded from Google Fonts; offline, the game falls back to a system rounded font.
