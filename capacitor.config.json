@@ -1,0 +1,6 @@
+{
+  "appId": "com.homilabs.bumperbuddies",
+  "appName": "Bumper Buddies",
+  "webDir": "www",
+  "android": { "backgroundColor": "#12062e" }
+}

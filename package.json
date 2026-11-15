@@ -1,0 +1,19 @@
+{
+  "name": "bumper-buddies",
+  "version": "1.0.0",
+  "description": "Bumper Buddies Pinball - kid-friendly pinball game (web + Android)",
+  "private": true,
+  "scripts": {
+    "build": "bash scripts/build-www.sh",
+    "build:release": "bash scripts/build-www.sh live"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/cli": "^7.6.10",
+    "@capacitor/core": "^8.6.2"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.3.0"
+  }
+}

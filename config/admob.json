@@ -1,0 +1,22 @@
+{
+  "_note": "AdMob config for Bumper Buddies (Android). App and unit created 15 Nov 2026 in the AdMob account homilabs.smc@gmail.com. Ad ids are not secrets; debug builds use Google's sample ids and release builds these.",
+  "account": "homilabs.smc@gmail.com",
+  "publisher_id": "pub-2087846699268567",
+  "app": {
+    "name": "Bumper Buddies",
+    "platform": "android",
+    "package": "com.homilabs.bumperbuddies",
+    "app_id": "ca-app-pub-2087846699268567~5956484278",
+    "status": "requires review (link the Play listing once published)"
+  },
+  "ad_units": {
+    "next_game_interstitial": {
+      "name": "bumperbuddies_next_game_interstitial",
+      "format": "interstitial",
+      "id": "ca-app-pub-2087846699268567/6444549375",
+      "placement": "before the next game starts, after every 2nd finished game, at most once every 3 minutes; never during play"
+    }
+  },
+  "child_directed": "tagForChildDirectedTreatment + tagForUnderAgeOfConsent on every request, max ad content rating G",
+  "app_ads_txt": "google.com, pub-2087846699268567, DIRECT, f08c47fec0942fa0"
+}

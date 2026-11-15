@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b1c8f"/><stop offset="1" stop-color="#170a45"/></linearGradient>
+    <radialGradient id="bump" cx="0.38" cy="0.35" r="0.7"><stop offset="0" stop-color="#ffc2ec"/><stop offset="1" stop-color="#e0249f"/></radialGradient>
+    <radialGradient id="ball" cx="0.35" cy="0.3" r="0.75"><stop offset="0" stop-color="#fff"/><stop offset="0.5" stop-color="#dfe6f5"/><stop offset="1" stop-color="#7d86a8"/></radialGradient>
+  </defs>
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  <path d="M30 150 L72 172 M162 150 L120 172" stroke="#ffb547" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="86" cy="92" r="46" fill="url(#bump)" stroke="#fff" stroke-width="6"/>
+  <circle cx="72" cy="84" r="6" fill="#2a0a4a"/><circle cx="100" cy="84" r="6" fill="#2a0a4a"/>
+  <path d="M68 100 Q86 118 104 100" fill="none" stroke="#2a0a4a" stroke-width="6" stroke-linecap="round"/>
+  <path d="M150 26 l7 15 16 2 -12 11 3 16 -14 -8 -14 8 3 -16 -12 -11 16 -2z" fill="#ffe45c"/>
+  <circle cx="146" cy="128" r="18" fill="url(#ball)"/>
+</svg>

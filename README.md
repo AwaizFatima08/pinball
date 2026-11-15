@@ -36,6 +36,21 @@ Then open http://127.0.0.1:8791. Opening `index.html` directly from disk also wo
 
 No third-party requests: fonts are system fonts (rounded where available), and nothing leaves the device.
 
+## Android app (Capacitor)
+
+The same game ships as an Android app, package `com.homilabs.bumperbuddies`, with AdMob ads. The web version has no ads: `js/ads.js` does nothing without the Capacitor plugin.
+
+- **Ads** (account homilabs.smc@gmail.com; ids in `config/admob.json`):
+  - one interstitial before the next game starts, after every 2nd finished game, at most once every 3 minutes, never during play;
+  - every request is child-directed (COPPA), under the age of consent (GDPR) and limited to rating G.
+- **Debug:** `npm run build && npx cap sync android`, then `jobq run --name pinball-debug -- bash -c "cd android && ./gradlew assembleDebug"`. Debug builds always use Google's sample app id and test unit.
+- **Release:** `bash scripts/release.sh` writes the signed `.aab` (Play) and `.apk` to `releases/<version>-<code>/`. It is the only path that puts the live unit in.
+- **Signing:**
+  - Upload key `.secrets/bumperbuddies-upload.keystore`, alias `bumperbuddies-upload`, created 15 Nov 2026, valid 10,000 days.
+  - Its passwords are in `.secrets/` and are read through `android/keystore.properties`. Both are gitignored.
+  - Back up `.secrets/`, and never push it.
+- **Before each release:** bump `versionCode` and `versionName` in `android/app/build.gradle`.
+
 ## Hosting
 
 Live home: https://tools.homilabs.org/pinball/ (hub card, privacy and terms sections use the slug `bumperbuddies`).

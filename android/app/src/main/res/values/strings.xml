@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Bumper Buddies</string>
+    <string name="title_activity_main">Bumper Buddies</string>
+    <string name="package_name">com.homilabs.bumperbuddies</string>
+    <string name="custom_url_scheme">com.homilabs.bumperbuddies</string>
+</resources>

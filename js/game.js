@@ -529,6 +529,7 @@
     state = 'over';
     flippers.forEach(f => { f.pressed = false; });
     Sound.gameOver();
+    Ads.gameOver();
     const best = loadScores()[0];
     const rank = addScore(alias, score);
     $('over-name').textContent = alias;
@@ -562,10 +563,17 @@
     show('start');
   }
 
-  $('btn-play').addEventListener('click', startGame);
-  $('alias').addEventListener('keydown', e => { if (e.key === 'Enter') startGame(); });
+  // An ad, when one is due, runs before the next game starts (Android app only).
+  function playNext() {
+    if (!cleanAlias($('alias').value)) { startGame(); return; }
+    Sound.stopMusic();
+    Ads.beforeNext(startGame);
+  }
+
+  $('btn-play').addEventListener('click', playNext);
+  $('alias').addEventListener('keydown', e => { if (e.key === 'Enter') playNext(); });
   $('btn-dice').addEventListener('click', () => { $('alias').value = randomAlias(); Sound.init(); Sound.click(); });
-  $('btn-again').addEventListener('click', () => { $('alias').value = alias; startGame(); });
+  $('btn-again').addEventListener('click', () => { $('alias').value = alias; playNext(); });
   $('btn-rename').addEventListener('click', () => { $('alias').value = alias; toMenu(); $('alias').select(); });
   $('btn-resume').addEventListener('click', togglePause);
   $('btn-quit').addEventListener('click', () => { pausedFrom = null; toMenu(); });
@@ -574,7 +582,19 @@
   $('btn-sfx').addEventListener('click', e => { Sound.init(); e.currentTarget.classList.toggle('off', !Sound.toggleSfx()); });
   $('btn-music').classList.toggle('off', !Sound.musicOn);
   $('btn-sfx').classList.toggle('off', !Sound.sfxOn);
-  document.addEventListener('visibilitychange', () => { if (document.hidden && state !== 'paused') togglePause(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { if (state !== 'paused') togglePause(); Sound.suspend(); } else Sound.resume();
+  });
+
+  // Android back button (Capacitor App plugin): pause or resume a game, otherwise close the app.
+  const AppPlugin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App;
+  if (AppPlugin && AppPlugin.addListener) {
+    AppPlugin.addListener('backButton', () => {
+      if (state === 'play' || state === 'launch' || state === 'drain' || state === 'paused') togglePause();
+      else if (state === 'over') toMenu();
+      else AppPlugin.exitApp();
+    });
+  }
 
   // ---------------- drawing ----------------
   function resize() {

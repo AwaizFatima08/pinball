@@ -130,6 +130,9 @@ const Sound = (() => {
     init,
     get musicOn() { return musicOn; },
     get sfxOn() { return sfxOn; },
+    // Silence everything while the app is in the background or an ad covers it.
+    suspend() { if (ctx && ctx.state === 'running') ctx.suspend(); },
+    resume() { if (ctx && ctx.state === 'suspended') ctx.resume(); },
     startMusic() { musicWanted = true; syncMusic(); },
     stopMusic() { musicWanted = false; syncMusic(); },
     toggleMusic() {
