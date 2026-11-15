@@ -34,4 +34,10 @@ Then open http://127.0.0.1:8791. Opening `index.html` directly from disk also wo
 - `js/game.js` – table layout, physics (sub-stepped circle/segment collisions, moving flippers), scoring, drawing
 - `js/audio.js` – background music and all sound effects, synthesized live with the Web Audio API (no audio files, nothing to attribute)
 
-The Fredoka font is loaded from Google Fonts; offline, the game falls back to a system rounded font.
+No third-party requests: fonts are system fonts (rounded where available), and nothing leaves the device.
+
+## Hosting
+
+Live home: https://tools.homilabs.org/pinball/ (hub card, privacy and terms sections use the slug `bumperbuddies`).
+The site source is `/mnt/storage/projects/homilabs_tools/site/pinball/`; copy `index.html`, `css/` and `js/` there after changes.
+`homilabs_tools/tools/add_bumperbuddies.py` adds the hub card, privacy and terms blocks to a set of pages.

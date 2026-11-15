@@ -510,9 +510,7 @@
     }
     alias = name;
     store('alias', alias);
-    Sound.init();
-    Sound.click();
-    Sound.startMusic();
+    try { Sound.init(); Sound.click(); Sound.startMusic(); } catch (e) { /* sound must never block play */ }
     score = 0; balls = START_BALLS; mult = 1;
     stats.markers = stats.bumpers = stats.supers = 0;
     particles.length = popups.length = messages.length = 0;

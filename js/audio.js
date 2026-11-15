@@ -22,6 +22,10 @@ const Sound = (() => {
     if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
+    try { build(AC); } catch (e) { ctx = null; } // no audio device: play silently
+  }
+
+  function build(AC) {
     ctx = new AC();
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -14; comp.ratio.value = 4;
