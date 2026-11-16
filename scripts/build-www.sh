@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 rm -rf www && mkdir -p www
-cp -r index.html css js www/
+mkdir -p www/assets && cp -r index.html css js www/ && cp -r assets/game www/assets/
 if [ "${1:-}" = "live" ]; then
   unit=$(node -p "require('./config/admob.json').ad_units.next_game_interstitial.id")
   [[ "$unit" == ca-app-pub-2087846699268567/* ]] || { echo "FAIL: no live interstitial id in config/admob.json"; exit 1; }

@@ -6,7 +6,7 @@ const Sound = (() => {
   let musicOn = loadPref('music', true);
   let sfxOn = loadPref('sfx', true);
   let musicWanted = false, musicTimer = null, nextStepTime = 0, stepIdx = 0;
-  let chargeOsc = null, chargeGain = null;
+  let chargeOsc = null, chargeGain = null, musicSrc = null;
   let lastThud = 0;
 
   const BPM = 128;
@@ -36,6 +36,41 @@ const Sound = (() => {
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    loadSamples();
+  }
+
+  // Recorded clips (assets/game/, made from approved homidev sounds). Each one replaces its synthesized sound
+  // once it has loaded; a missing or broken file just leaves the synthesized one in place.
+  const SAMPLE_FILES = {
+    bumper: 'assets/game/sfx-bumper.ogg', flipper: 'assets/game/sfx-flipper.ogg', launch: 'assets/game/sfx-launch.ogg',
+    drain: 'assets/game/sfx-drain.ogg', bonus: 'assets/game/sfx-bonus.ogg', music: 'assets/game/music.ogg',
+  };
+  const samples = {};
+  function loadSamples() {
+    for (const [k, url] of Object.entries(SAMPLE_FILES)) {
+      fetch(url)
+        .then(r => (r.ok ? r.arrayBuffer() : Promise.reject()))
+        .then(b => ctx.decodeAudioData(b))
+        .then(buf => {
+          if (k !== 'music') buf.start = firstSound(buf);
+          samples[k] = buf;
+          if (k === 'music') { stopMusicNow(); syncMusic(); }
+        })
+        .catch(() => { /* keep the synthesized sound */ });
+    }
+  }
+  // Seconds of near-silence at the head of a clip, skipped when it plays so a flipper reacts at once.
+  function firstSound(buf) {
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) if (Math.abs(d[i]) > 0.02) return Math.max(0, i / buf.sampleRate - 0.005);
+    return 0;
+  }
+  function sample(k, vol) {
+    if (!samples[k]) return false;
+    const s = ctx.createBufferSource(), g = ctx.createGain();
+    s.buffer = samples[k]; g.gain.value = vol;
+    s.connect(g); g.connect(sfxBus); s.start(0, samples[k].start || 0);
+    return true;
   }
 
   function osc(type, freq, t, dur, vol, bus, slideTo) {
@@ -113,13 +148,24 @@ const Sound = (() => {
     }
   }
 
+  function stopMusicNow() {
+    if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+    if (musicSrc) { musicSrc.stop(); musicSrc = null; }
+  }
+
   function syncMusic() {
     const shouldPlay = ctx && musicWanted && musicOn;
-    if (shouldPlay && !musicTimer) {
+    if (!shouldPlay) { stopMusicNow(); return; }
+    if (samples.music) {
+      // recorded loop, cut at whole bars so it repeats seamlessly
+      if (!musicSrc) {
+        musicSrc = ctx.createBufferSource();
+        musicSrc.buffer = samples.music; musicSrc.loop = true;
+        musicSrc.connect(musicBus); musicSrc.start();
+      }
+    } else if (!musicTimer) {
       nextStepTime = ctx.currentTime + 0.08;
       musicTimer = setInterval(tick, 25);
-    } else if (!shouldPlay && musicTimer) {
-      clearInterval(musicTimer); musicTimer = null;
     }
   }
 
@@ -155,7 +201,7 @@ const Sound = (() => {
       osc('sine', mtof(m + 19), t + 0.02, 0.15, 0.06, sfxBus);
     },
     bumper() {
-      if (!ready()) return;
+      if (!ready() || sample('bumper', 0.8)) return;
       const t = ctx.currentTime;
       osc('square', 260, t, 0.14, 0.22, sfxBus, 720);
       osc('sine', 520, t, 0.22, 0.3, sfxBus, 180);
@@ -168,7 +214,7 @@ const Sound = (() => {
       noise(t, 0.04, 0.12, sfxBus, 'highpass', 3000);
     },
     flipper() {
-      if (!ready()) return;
+      if (!ready() || sample('flipper', 0.6)) return;
       const t = ctx.currentTime;
       noise(t, 0.05, 0.22, sfxBus, 'bandpass', 1800, 600, 1.5);
       osc('sine', 140, t, 0.06, 0.25, sfxBus, 70);
@@ -201,7 +247,7 @@ const Sound = (() => {
       chargeOsc = null; chargeGain = null;
     },
     launch(p) {
-      if (!ready()) return;
+      if (!ready() || sample('launch', 0.4 + p * 0.5)) return;
       const t = ctx.currentTime;
       noise(t, 0.45, 0.35, sfxBus, 'bandpass', 300, 2500 + p * 3000, 1.2);
       osc('sawtooth', 120, t, 0.3, 0.12, sfxBus, 500 + p * 600);
@@ -212,7 +258,7 @@ const Sound = (() => {
       [72, 76, 79, 84, 88].forEach((m, i) => osc('square', mtof(m + level * 2), t + i * 0.06, 0.15, 0.14, sfxBus));
     },
     bonus() {
-      if (!ready()) return;
+      if (!ready() || sample('bonus', 0.8)) return;
       const t = ctx.currentTime;
       [72, 76, 79, 84, 79, 84, 88, 91, 96].forEach((m, i) => {
         osc('square', mtof(m), t + i * 0.07, 0.16, 0.13, sfxBus);
@@ -225,7 +271,7 @@ const Sound = (() => {
       [79, 84, 88].forEach((m, i) => osc('triangle', mtof(m), t + i * 0.09, 0.2, 0.3, sfxBus));
     },
     drain() {
-      if (!ready()) return;
+      if (!ready() || sample('drain', 0.25)) return;
       const t = ctx.currentTime;
       [[392, 370], [370, 349], [349, 262]].forEach((f, i) => osc('sawtooth', f[0], t + i * 0.28, i === 2 ? 0.7 : 0.26, 0.13, sfxBus, f[1]));
     },

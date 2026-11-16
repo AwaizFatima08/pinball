@@ -46,6 +46,7 @@
           </div>
           <h2>Top Players</h2>
           <ol id="start-scores" class="scores"></ol>
+          <button id="btn-parents" class="link">Grown-ups: privacy &amp; terms</button>
         </div>
       </section>
 
@@ -62,6 +63,25 @@
             <button id="btn-again" class="btn primary">Play Again</button>
             <button id="btn-rename" class="btn">New Name</button>
           </div>
+        </div>
+      </section>
+
+      <section id="screen-parents" class="screen hidden">
+        <div class="card small">
+          <h1 class="title">Grown-ups</h1>
+          <p class="tag">Ask a grown-up to answer this:</p>
+          <label for="gate-a" id="gate-q" class="gate-q"></label>
+          <input id="gate-a" inputmode="numeric" maxlength="3" autocomplete="off">
+          <p id="gate-hint" class="hint"></p>
+          <div id="gate-links" class="row hidden">
+            <button class="btn" data-url="https://tools.homilabs.org/privacy#bumperbuddies">Privacy</button>
+            <button class="btn" data-url="https://tools.homilabs.org/terms#bumperbuddies">Terms</button>
+          </div>
+          <div class="row">
+            <button id="btn-gate-ok" class="btn primary">OK</button>
+            <button id="btn-gate-back" class="btn">Back</button>
+          </div>
+          <p class="hint credits">Bumper Buddies by HomiLabs. Sound effects and music: Powered by Stability AI.</p>
         </div>
       </section>
 

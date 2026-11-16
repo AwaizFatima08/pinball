@@ -50,6 +50,10 @@ The same game ships as an Android app, package `com.homilabs.bumperbuddies`, wit
   - Its passwords are in `.secrets/` and are read through `android/keystore.properties`. Both are gitignored.
   - Back up `.secrets/`, and never push it.
 - **Before each release:** bump `versionCode` and `versionName` in `android/app/build.gradle`.
+- **Art and sound:** approved homidev assets live in `assets/` (see `assets/ASSET-REGISTER.md`). The game uses the copies in
+  `assets/game/` made by `scripts/make-game-art.sh`; anything missing falls back to the drawing and sounds made in code.
+  The sound effects and music need the credit "Powered by Stability AI" (`assets/ATTRIBUTION.md`), shown on the grown-ups
+  screen and in the store description.
 
 ## Hosting
 

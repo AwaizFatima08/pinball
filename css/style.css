@@ -148,6 +148,17 @@ button.icon.big { width: 48px; height: 48px; font-size: 22px; flex: 0 0 auto; }
 .btn.primary:hover { filter: brightness(1.08); }
 .row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
 
+.link {
+  margin-top: 14px; padding: 4px 8px; border: 0; background: none;
+  color: var(--muted); font-size: 13px; text-decoration: underline;
+}
+.gate-q { display: block; font-size: 30px; font-weight: 700; margin: 4px 0 10px; }
+#gate-a {
+  width: 120px; font: inherit; font-size: 26px; font-weight: 700; text-align: center;
+  padding: 8px; border-radius: 14px; border: 3px solid var(--cyan); background: #0d0430; color: #fff; outline: none;
+  -webkit-user-select: text; user-select: text;
+}
+
 .howto {
   margin: 16px 0 6px; text-align: left; font-size: 13px; line-height: 1.45;
   background: #0003; border-radius: 14px; padding: 10px 12px; color: #e9e0ff;

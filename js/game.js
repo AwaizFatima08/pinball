@@ -58,10 +58,22 @@
     sling(380, 505, 380, 595, 328, 632);
   })();
 
+  // Optional artwork (assets/game/, made from approved homidev images). Until a picture loads, or if it is
+  // missing, the table and bumpers are drawn in code as before.
+  function art(src, onload) {
+    const img = new Image();
+    img.onload = () => { img.ready = true; if (onload) onload(); };
+    img.src = src;
+    return img;
+  }
+  const ART = {
+    playfield: art('assets/game/playfield.jpg', () => { if (bg.width) drawBackground(); }),
+  };
+
   const bumpers = [
-    { x: 150, y: 205, r: 26, pts: 100, hue: 330 },
-    { x: 290, y: 205, r: 26, pts: 100, hue: 190 },
-    { x: 220, y: 292, r: 28, pts: 150, hue: 48 },
+    { x: 150, y: 205, r: 26, pts: 100, hue: 330, img: art('assets/game/bumper-pink.png') },
+    { x: 290, y: 205, r: 26, pts: 100, hue: 190, img: art('assets/game/bumper-blue.png') },
+    { x: 220, y: 292, r: 28, pts: 150, hue: 48, img: art('assets/game/bumper-yellow.png') },
   ].map(b => Object.assign(b, { glow: 0, cool: 0 }));
 
   const VALUES = [
@@ -456,7 +468,7 @@
   canvas.addEventListener('contextmenu', e => e.preventDefault());
 
   // ---------------- screens & HUD ----------------
-  const screens = { start: $('screen-start'), over: $('screen-over'), pause: $('screen-pause') };
+  const screens = { start: $('screen-start'), over: $('screen-over'), pause: $('screen-pause'), parents: $('screen-parents') };
   function show(name) {
     for (const k in screens) screens[k].classList.toggle('hidden', k !== name);
   }
@@ -578,6 +590,37 @@
   $('btn-resume').addEventListener('click', togglePause);
   $('btn-quit').addEventListener('click', () => { pausedFrom = null; toMenu(); });
   $('btn-pause').addEventListener('click', togglePause);
+  // Grown-ups gate: a sum before the privacy and terms links, so children don't wander off to a website.
+  let gateSum = 0;
+  $('btn-parents').addEventListener('click', () => {
+    const a = 6 + Math.floor(Math.random() * 4), b = 6 + Math.floor(Math.random() * 4);
+    gateSum = a + b;
+    $('gate-q').textContent = `${a} + ${b} = ?`;
+    $('gate-a').value = '';
+    $('gate-hint').textContent = '';
+    $('gate-links').classList.add('hidden');
+    $('btn-gate-ok').classList.remove('hidden');
+    show('parents');
+  });
+  $('btn-gate-ok').addEventListener('click', () => {
+    if (Number($('gate-a').value) === gateSum) {
+      $('gate-links').classList.remove('hidden');
+      $('btn-gate-ok').classList.add('hidden');
+      $('gate-hint').textContent = 'Opens in your web browser.';
+    } else {
+      $('gate-hint').textContent = 'Not quite. Please ask a grown-up.';
+      $('gate-a').value = '';
+    }
+  });
+  $('gate-a').addEventListener('keydown', e => { if (e.key === 'Enter') $('btn-gate-ok').click(); });
+  $('gate-links').addEventListener('click', e => {
+    const url = e.target.dataset && e.target.dataset.url;
+    if (!url) return;
+    // In the Android app Capacitor hands an outside URL to the system browser.
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) location.href = url;
+    else window.open(url, '_blank', 'noopener');
+  });
+  $('btn-gate-back').addEventListener('click', toMenu);
   $('btn-music').addEventListener('click', e => { Sound.init(); e.currentTarget.classList.toggle('off', !Sound.toggleMusic()); });
   $('btn-sfx').addEventListener('click', e => { Sound.init(); e.currentTarget.classList.toggle('off', !Sound.toggleSfx()); });
   $('btn-music').classList.toggle('off', !Sound.musicOn);
@@ -591,7 +634,7 @@
   if (AppPlugin && AppPlugin.addListener) {
     AppPlugin.addListener('backButton', () => {
       if (state === 'play' || state === 'launch' || state === 'drain' || state === 'paused') togglePause();
-      else if (state === 'over') toMenu();
+      else if (state === 'over' || !screens.parents.classList.contains('hidden')) toMenu();
       else AppPlugin.exitApp();
     });
   }
@@ -634,6 +677,12 @@
     g.fillStyle = lg;
     g.fillRect(0, 0, W, H);
 
+    if (ART.playfield.ready) {
+      // painted playfield, dimmed a little so the neon rails and markers stay readable
+      g.drawImage(ART.playfield, 0, 0, W, H);
+      g.fillStyle = 'rgba(18,6,46,0.35)';
+      g.fillRect(0, 0, W, H);
+    } else {
     // polka-dot pattern
     g.fillStyle = 'rgba(255,255,255,0.035)';
     for (let y = 30; y < H; y += 28) for (let x = 30 + ((y / 28) % 2) * 14; x < 420; x += 28) {
@@ -647,6 +696,7 @@
       g.beginPath(); g.arc(220, 330, 170 - i * 11, Math.PI, Math.PI * 2); g.stroke();
     });
     g.globalAlpha = 1;
+    }
     // logo in the open space above the flippers
     g.textAlign = 'center';
     g.font = '700 34px Fredoka, "Baloo 2", "Comic Sans MS", system-ui, sans-serif';
@@ -769,6 +819,16 @@
       const s = 1 + b.glow * 0.18;
       ctx.save();
       ctx.translate(b.x, b.y); ctx.scale(s, s);
+      if (b.img.ready) {
+        // painted buddy: the picture is a little larger than the hit circle, with a glow when hit
+        ctx.shadowColor = `hsl(${b.hue},100%,60%)`; ctx.shadowBlur = 10 + b.glow * 34;
+        const d = b.r * 2.5;
+        ctx.drawImage(b.img, -d / 2, -d / 2, d, d);
+        ctx.restore();
+        ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = `700 11px ${FONT}`;
+        ctx.fillText(b.pts, b.x, b.y + b.r + 10);
+        continue;
+      }
       ctx.shadowColor = `hsl(${b.hue},100%,60%)`; ctx.shadowBlur = 16 + b.glow * 34;
       const rg = ctx.createRadialGradient(-b.r * 0.3, -b.r * 0.35, 2, 0, 0, b.r);
       rg.addColorStop(0, `hsl(${b.hue},100%,${82 + b.glow * 15}%)`);
